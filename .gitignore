@@ -35,7 +35,7 @@ build/
 
 # ===== SellSync Secret Protection =====
 # Local secret configuration
-src/main/resources/application.properties
+
 src/main/resources/ca.pem
 .env
 
