@@ -37,7 +37,10 @@ build/
 # Local secret configuration
 
 src/main/resources/ca.pem
-.env
+
+*.env
+application.properties
+application-*.properties
 
 # Log files
 *.log
