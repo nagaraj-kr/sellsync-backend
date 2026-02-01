@@ -96,25 +96,35 @@ public class SecurityConfig {
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
     http
-        .csrf(csrf -> csrf.disable())
+        // ⭐ VERY IMPORTANT: cors first
         .cors(Customizer.withDefaults())
 
+        .csrf(csrf -> csrf.disable())
+
         .authorizeHttpRequests(auth -> auth
+
+            // ⭐ Preflight request allow pannanum
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+            // Public APIs
             .requestMatchers(
                 "/api/auth/**",
                 "/api/register/**",
                 "/api/public/**",
                 "/actuator/health"
             ).permitAll()
+
+            // Others secured
             .anyRequest().authenticated()
         )
 
+        // API based app – no HTML login
+        .formLogin(form -> form.disable())
+        .httpBasic(Customizer.withDefaults())
+
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        )
-
-        .formLogin(form -> form.disable())
-        .httpBasic(Customizer.withDefaults());
+        );
 
     return http.build();
 }
