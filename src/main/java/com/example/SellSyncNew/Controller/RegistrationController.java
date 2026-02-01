@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/register")
-@CrossOrigin(origins = "http://localhost:5500")  // update if frontend is hosted elsewhere
 public class RegistrationController {
 
     @Autowired
