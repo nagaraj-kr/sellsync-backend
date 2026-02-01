@@ -55,43 +55,6 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
-
-    // @Bean
-    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    //     http.csrf(csrf -> csrf.disable())
-    //             .authorizeHttpRequests(auth -> auth
-    //                     .requestMatchers(
-    //                             "/api/register/**", "/api/auth/login",
-    //                             "/register.html", "/Login.html", "/index.html", "/pricing.html",
-    //                             "/About.html", "/forgot-password.html", "/contactus.html", "/features.html","/profile-verification.html",
-    //                             "/css/**", "/js/**", "/images/**"
-    //                     ).permitAll()
-    //                     .requestMatchers("/api/wholesaler").authenticated()
-    //                     .requestMatchers("/admindashboard.html").hasRole("ADMIN")
-    //                     .requestMatchers("/manufacturerdashboard.html").hasRole("MANUFACTURER")
-    //                     .requestMatchers("/wholesalerdashboard.html").hasRole("WHOLESALER")
-    //                     .anyRequest().authenticated()
-    //             )
-    //             .sessionManagement(session -> session
-    //                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-    //             )
-    //             .formLogin(form -> form
-    //                     .loginPage("/Login.html")
-    //                     .loginProcessingUrl("/login")
-    //                     .usernameParameter("email")
-    //                     .passwordParameter("password")
-    //                     .successHandler(successHandler)
-    //                     .failureHandler(customAuthenticationFailureHandler)
-    //                     .permitAll()
-    //             )
-    //             .logout(logout -> logout
-    //                     .logoutUrl("/logout")
-    //                     .logoutSuccessUrl("/Login.html?logout=true")
-    //                     .permitAll()
-    //             );
-
-    //     return http.build();
-    // }
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
