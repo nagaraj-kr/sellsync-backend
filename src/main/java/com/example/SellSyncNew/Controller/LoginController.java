@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5500") // Allow your frontend port
+
 public class LoginController {
 
     @Autowired
