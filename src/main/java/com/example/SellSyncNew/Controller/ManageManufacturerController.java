@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/manufacturer")
-@CrossOrigin(origins = "http://localhost:5500")
 public class ManageManufacturerController {
 
     @Autowired
