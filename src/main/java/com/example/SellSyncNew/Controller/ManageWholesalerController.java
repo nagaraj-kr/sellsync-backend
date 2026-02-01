@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/wholesaler")
-@CrossOrigin(origins = "http://localhost:5500")
 public class ManageWholesalerController {
 
         @Autowired
