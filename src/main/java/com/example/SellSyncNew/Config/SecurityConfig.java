@@ -92,28 +92,33 @@ public class SecurityConfig {
 
     //     return http.build();
     // }
-    @Bean
+@Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
     http
         .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.disable())
-        .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
+        .cors(Customizer.withDefaults())
+
         .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/",
-                        "/error",
-                        "/api/auth/**",
-                        "/api/register/**",
-                        "/api/public/**"
-                ).permitAll()
-                .anyRequest().authenticated()
+            .requestMatchers(
+                "/api/auth/**",
+                "/api/register/**",
+                "/api/public/**",
+                "/actuator/health"
+            ).permitAll()
+            .anyRequest().authenticated()
         )
+
+        .sessionManagement(session ->
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        )
+
+        .formLogin(form -> form.disable())
         .httpBasic(Customizer.withDefaults());
 
     return http.build();
 }
+
 
 }
 
