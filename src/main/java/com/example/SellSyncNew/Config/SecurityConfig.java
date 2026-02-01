@@ -16,82 +16,149 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+// @Configuration
+// @EnableWebSecurity
+// public class SecurityConfig {
+//     @Autowired
+//     private CustomLoginSuccessHandler successHandler;
+
+//     @Autowired
+//     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+
+
+//     @Bean
+//     public BCryptPasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder();
+//     }
+//     @Autowired
+//     private CustomUserDetailsService customUserDetailsService;
+
+
+
+
+//     @Bean
+//     public CustomUserDetailsService userDetailsService() {
+//         return new CustomUserDetailsService(); // We'll create this next
+//     }
+
+//     @Bean
+//     public DaoAuthenticationProvider authProvider() {
+//         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+//         auth.setUserDetailsService(userDetailsService());
+//         auth.setPasswordEncoder(passwordEncoder());
+//         return auth;
+//     }
+
+//     @Bean
+//     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+//             throws Exception {
+//         return config.getAuthenticationManager();
+//     }
+// @Bean
+// public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+//     http
+//         // ⭐ VERY IMPORTANT: cors first
+//         .cors(Customizer.withDefaults())
+
+//         .csrf(csrf -> csrf.disable())
+
+//         .authorizeHttpRequests(auth -> auth
+
+//             // ⭐ Preflight request allow pannanum
+//             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+//             // Public APIs
+//             .requestMatchers(
+//                 "/api/auth/**",
+//                 "/api/register/**",
+//                 "/api/public/**",
+//                 "/actuator/health"
+//             ).permitAll()
+
+//             // Others secured
+//             .anyRequest().authenticated()
+//         )
+
+//         // API based app – no HTML login
+//         .formLogin(form -> form.disable())
+//         .httpBasic(Customizer.withDefaults())
+
+//         .sessionManagement(session ->
+//             session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+//         );
+
+//     return http.build();
+// }
+
+
+// }
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private CustomLoginSuccessHandler successHandler;
-
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
-
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-
-
 
     @Bean
-    public CustomUserDetailsService userDetailsService() {
-        return new CustomUserDetailsService(); // We'll create this next
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(userDetailsService());
-        auth.setPasswordEncoder(passwordEncoder());
-        return auth;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    http
-        // ⭐ VERY IMPORTANT: cors first
-        .cors(Customizer.withDefaults())
+    // ⭐⭐⭐ THIS IS THE KEY ⭐⭐⭐
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-        .csrf(csrf -> csrf.disable())
+        config.setAllowedOrigins(List.of(
+            "https://sellsync-frontend.netlify.app"
+        ));
 
-        .authorizeHttpRequests(auth -> auth
+        config.setAllowedMethods(List.of(
+            "GET","POST","PUT","DELETE","OPTIONS"
+        ));
 
-            // ⭐ Preflight request allow pannanum
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        config.setAllowedHeaders(List.of("*"));
 
-            // Public APIs
-            .requestMatchers(
-                "/api/auth/**",
-                "/api/register/**",
-                "/api/public/**",
-                "/actuator/health"
-            ).permitAll()
+        config.setAllowCredentials(true); // REQUIRED for cookies
 
-            // Others secured
-            .anyRequest().authenticated()
-        )
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
 
-        // API based app – no HTML login
-        .formLogin(form -> form.disable())
-        .httpBasic(Customizer.withDefaults())
+        return source;
+    }
 
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        );
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    return http.build();
-}
+        http
+            .cors(Customizer.withDefaults()) // ⭐ MUST be first
+            .csrf(csrf -> csrf.disable())
 
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/register/**",
+                    "/actuator/health"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
 
+            // ❌ NO FORM LOGIN
+            .formLogin(form -> form.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
+
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            );
+
+        return http.build();
+    }
 }
 
