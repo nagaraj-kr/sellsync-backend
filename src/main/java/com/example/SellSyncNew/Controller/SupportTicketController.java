@@ -12,7 +12,6 @@ import java.nio.file.*;
 import java.util.*;
 @RestController
 @RequestMapping("/api/support")
-@CrossOrigin(origins = "*")
 public class SupportTicketController {
 
     @Autowired
