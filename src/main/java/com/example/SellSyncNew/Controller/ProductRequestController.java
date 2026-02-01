@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/requests")
-@CrossOrigin(origins = "http://localhost:5500") // Adjust your frontend origin here
 public class ProductRequestController {
 
     @Autowired
