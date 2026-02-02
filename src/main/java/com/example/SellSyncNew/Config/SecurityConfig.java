@@ -109,35 +109,25 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ⭐⭐⭐ THIS IS THE KEY ⭐⭐⭐
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of(
-            "https://sellsync-frontend.netlify.app"
-        ));
-
-        config.setAllowedMethods(List.of(
-            "GET","POST","PUT","DELETE","OPTIONS"
-        ));
-
-        config.setAllowedHeaders(List.of("*"));
-
-        config.setAllowCredentials(true); // REQUIRED for cookies
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(Customizer.withDefaults()) // ⭐ MUST be first
+            .cors(cors -> {
+                CorsConfigurationSource source = request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of(
+                        "https://sellsync-frontend.netlify.app"
+                    ));
+                    config.setAllowedMethods(List.of(
+                        "GET","POST","PUT","DELETE","OPTIONS"
+                    ));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+                    return config;
+                };
+                cors.configurationSource(source);
+            })
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
@@ -150,7 +140,6 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // ❌ NO FORM LOGIN
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
 
