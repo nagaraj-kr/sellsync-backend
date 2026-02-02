@@ -56,6 +56,7 @@ import java.util.Map;
 // }
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "https://sellsync-frontend.netlify.app", allowCredentials = "true")
 public class LoginController {
 
     @Autowired
