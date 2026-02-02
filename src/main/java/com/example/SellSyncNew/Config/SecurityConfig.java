@@ -113,33 +113,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(cors -> {
-                CorsConfigurationSource source = request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(
-                        "https://sellsync-frontend.netlify.app"
-                    ));
-                    config.setAllowedMethods(List.of(
-                        "GET","POST","PUT","DELETE","OPTIONS"
-                    ));
-                    config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(true);
-                    return config;
-                };
-                cors.configurationSource(source);
-            })
+            // ✅ IMPORTANT: use global CORS bean
+            .cors(Customizer.withDefaults())
+
+            // ❌ disable CSRF (API based login)
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
+                // ✅ allow preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // ✅ public APIs
                 .requestMatchers(
                     "/api/auth/**",
                     "/api/register/**",
                     "/actuator/health"
                 ).permitAll()
+
+                // 🔒 others need auth
                 .anyRequest().authenticated()
             )
 
+            // ❌ disable default login
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
 
@@ -150,4 +145,5 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
 
