@@ -19,42 +19,42 @@ import org.springframework.security.web.SecurityFilterChain;
 // @Configuration
 // @EnableWebSecurity
 // public class SecurityConfig {
-//     @Autowired
-//     private CustomLoginSuccessHandler successHandler;
+    // @Autowired
+    // private CustomLoginSuccessHandler successHandler;
 
-//     @Autowired
-//     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
-
-
-//     @Bean
-//     public BCryptPasswordEncoder passwordEncoder() {
-//         return new BCryptPasswordEncoder();
-//     }
-//     @Autowired
-//     private CustomUserDetailsService customUserDetailsService;
+    // @Autowired
+    // private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 
 
+    // @Bean
+    // public BCryptPasswordEncoder passwordEncoder() {
+    //     return new BCryptPasswordEncoder();
+    // }
+    // @Autowired
+    // private CustomUserDetailsService customUserDetailsService;
 
-//     @Bean
-//     public CustomUserDetailsService userDetailsService() {
-//         return new CustomUserDetailsService(); // We'll create this next
-//     }
 
-//     @Bean
-//     public DaoAuthenticationProvider authProvider() {
-//         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-//         auth.setUserDetailsService(userDetailsService());
-//         auth.setPasswordEncoder(passwordEncoder());
-//         return auth;
-//     }
 
-//     @Bean
-//     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-//             throws Exception {
-//         return config.getAuthenticationManager();
-//     }
+
+    // @Bean
+    // public CustomUserDetailsService userDetailsService() {
+    //     return new CustomUserDetailsService(); // We'll create this next
+    // }
+
+    // @Bean
+    // public DaoAuthenticationProvider authProvider() {
+    //     DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+    //     auth.setUserDetailsService(userDetailsService());
+    //     auth.setPasswordEncoder(passwordEncoder());
+    //     return auth;
+    // }
+
+    // @Bean
+    // public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+    //         throws Exception {
+    //     return config.getAuthenticationManager();
+    // }
 // @Bean
 // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -98,48 +98,50 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public DaoAuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider authProvider =
+                new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ✅ IMPORTANT: use global CORS bean
             .cors(Customizer.withDefaults())
-
-            // ❌ disable CSRF (API based login)
             .csrf(csrf -> csrf.disable())
 
+            .authenticationProvider(authenticationProvider())
+
             .authorizeHttpRequests(auth -> auth
-                // ✅ allow preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                // ✅ public APIs
                 .requestMatchers(
-                    "/api/auth/**",
-                    "/api/register/**",
-                    "/actuator/health"
+                        "/api/auth/**",
+                        "/api/register/**",
+                        "/actuator/health"
                 ).permitAll()
-
-                // 🔒 others need auth
                 .anyRequest().authenticated()
             )
 
-            // ❌ disable default login
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
 
             .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             );
 
         return http.build();
