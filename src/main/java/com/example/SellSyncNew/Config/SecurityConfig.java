@@ -135,13 +135,8 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(
-                        "/api/auth/**",
-                        "/api/register/**",
-                        "/actuator/health"
-                ).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
+
             )
 
             .formLogin(form -> form.disable())
