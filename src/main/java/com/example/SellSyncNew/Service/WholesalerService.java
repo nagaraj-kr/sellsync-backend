@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WholesalerService {
@@ -18,6 +19,11 @@ public class WholesalerService {
     public List<Wholesaler> getAllWholesalers() {
         return wholesalerRepository.findAll();
     }
+    
+    public Optional<Wholesaler> findByEmail(String email) {
+    return wholesalerRepository.findByEmail(email);
+    }
+
 
     public Wholesaler getWholesalerById(Long id) {
         return wholesalerRepository.findById(id).orElse(null);
