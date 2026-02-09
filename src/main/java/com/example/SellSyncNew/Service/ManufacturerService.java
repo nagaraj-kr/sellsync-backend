@@ -18,6 +18,11 @@ public class ManufacturerService {
     private ManufacturerRepository manufacturerRepository;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    
+    public Optional<Manufacturer> findByEmail(String email) {
+    return manufacturerRepository.findByEmail(email);
+    }
+
 
     public List<Manufacturer> getAll() {
         return manufacturerRepository.findAll();
