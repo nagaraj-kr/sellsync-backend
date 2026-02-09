@@ -19,6 +19,11 @@ public class AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public Optional<Admin> findByEmail(String email) {
+    return adminRepository.findByEmail(email);
+}
+
+
     public Admin updateProfile(AdminUpdateProfileDTO dto) {
         Admin admin = adminRepository.findById(dto.getId())
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
