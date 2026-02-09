@@ -27,34 +27,41 @@ public class LoginController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("🔥 LOGIN API HIT");
+  @PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getEmail(),
+            loginRequest.getPassword()
+        )
+    );
 
-            // Fetch the admin details from the database
-            Admin admin = adminService.getAdminByEmail(loginRequest.getEmail());
-
-            // Avoid sending password back to frontend
-            Admin safeAdmin = new Admin();
-            safeAdmin.setId(admin.getId());
-            safeAdmin.setUsername(admin.getUsername());
-            safeAdmin.setEmail(admin.getEmail());
-            safeAdmin.setPhone(admin.getPhone());
-
-            return ResponseEntity.ok(safeAdmin);
-
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
+    // try admin
+    Optional<Admin> admin = adminService.findByEmail(loginRequest.getEmail());
+    if(admin.isPresent()){
+        return ResponseEntity.ok(admin.get());
     }
+
+    // try manufacturer
+    Optional<Manufacturer> manufacturer =
+        manufacturerService.findByEmail(loginRequest.getEmail());
+    if(manufacturer.isPresent()){
+        return ResponseEntity.ok(manufacturer.get());
+    }
+
+    // try wholesaler
+    Optional<Wholesaler> wholesaler =
+        wholesalerService.findByEmail(loginRequest.getEmail());
+    if(wholesaler.isPresent()){
+        return ResponseEntity.ok(wholesaler.get());
+    }
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body("User not found");
+}
+
+        
 }
 // @RestController
 // @RequestMapping("/api/auth")
