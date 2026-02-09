@@ -57,7 +57,12 @@ public class LoginController {
         Optional<Admin> admin = adminService.findByEmail(loginRequest.getEmail());
         if (admin.isPresent()) {
             System.out.println("Admin login success");
-            return ResponseEntity.ok(admin.get());
+           Map<String,Object> response = new HashMap<>();
+response.put("role","ADMIN");
+response.put("data",admin.get());
+
+return ResponseEntity.ok(response);
+
         }
 
         // 🔍 check manufacturer
@@ -65,7 +70,12 @@ public class LoginController {
                 manufacturerService.findByEmail(loginRequest.getEmail());
         if (manufacturer.isPresent()) {
             System.out.println("Manufacturer login success");
-            return ResponseEntity.ok(manufacturer.get());
+           Map<String,Object> response = new HashMap<>();
+response.put("role","MANUFACTURER");
+response.put("data",manufacturer.get());
+
+return ResponseEntity.ok(response);
+
         }
 
         // 🔍 check wholesaler
@@ -73,7 +83,12 @@ public class LoginController {
                 wholesalerService.findByEmail(loginRequest.getEmail());
         if (wholesaler.isPresent()) {
             System.out.println("Wholesaler login success");
-            return ResponseEntity.ok(wholesaler.get());
+           Map<String,Object> response = new HashMap<>();
+response.put("role","WHOLESALER");
+response.put("data",wholesaler.get());
+
+return ResponseEntity.ok(response);
+
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
