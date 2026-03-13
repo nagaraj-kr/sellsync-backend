@@ -1,21 +1,21 @@
-package com.example.SellSyncNew.Config;
+// package com.example.SellSyncNew.Config;
 
 
-import org.springframework.http.HttpMethod;
-import com.example.SellSyncNew.Service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.http.HttpMethod;
+// import com.example.SellSyncNew.Service.CustomUserDetailsService;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.authentication.AuthenticationManager;
+// import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+// import org.springframework.security.config.Customizer;
+// import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.config.http.SessionCreationPolicy;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.web.SecurityFilterChain;
 // @Configuration
 // @EnableWebSecurity
 // public class SecurityConfig {
@@ -95,6 +95,26 @@ import org.springframework.security.web.SecurityFilterChain;
 
 // }
 
+package com.example.SellSyncNew.Config;
+
+import com.example.SellSyncNew.Service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -109,45 +129,59 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-
-        DaoAuthenticationProvider authProvider =
-                new DaoAuthenticationProvider();
-
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
-
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-            .cors(Customizer.withDefaults())
+            // 1. CORS Setup (Netlify error fix)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 2. Disable CSRF for API
             .csrf(csrf -> csrf.disable())
-
+            
+            // 3. Auth Provider Setup
             .authenticationProvider(authenticationProvider())
-
+            
+            // 4. Endpoints Access
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
                 .anyRequest().permitAll()
-
             )
-
+            
+            // 5. Disable Default UI
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
-
+            
+            // 6. Stateless Session (IF_REQUIRED is okay for cookies)
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             );
 
         return http.build();
+    }
+
+    // CORS Configuration Bean
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("https://sellsync-frontend.netlify.app"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
 
