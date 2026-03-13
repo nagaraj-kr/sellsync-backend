@@ -23,6 +23,10 @@ import java.nio.file.Paths;
                             "file:/C:/SellSync/uploads/"
                     );
             String supportUploadPath = Paths.get("uploads/support").toAbsolutePath().toUri().toString();
+            // Path-oda end-la slash illai na, manual-ah saerkanum
+if (!supportUploadPath.endsWith("/")) {
+    supportUploadPath += "/";
+}
             registry.addResourceHandler("/uploads/support/**")
                     .addResourceLocations(supportUploadPath);
 
