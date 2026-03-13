@@ -1,21 +1,21 @@
-package com.example.SellSyncNew.Config;
+// package com.example.SellSyncNew.Config;
 
 
-import org.springframework.http.HttpMethod;
-import com.example.SellSyncNew.Service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.http.HttpMethod;
+// import com.example.SellSyncNew.Service.CustomUserDetailsService;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.authentication.AuthenticationManager;
+// import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+// import org.springframework.security.config.Customizer;
+// import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.config.http.SessionCreationPolicy;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.web.SecurityFilterChain;
 // @Configuration
 // @EnableWebSecurity
 // public class SecurityConfig {
@@ -199,12 +199,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Proper CORS linking
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/register/**").permitAll() // Endpoints-ah allow pannunga
-                .anyRequest().permitAll() // Temporary for testing
+                .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
+                .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
@@ -218,11 +218,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Unga Netlify URL-ah inga correct-ah set pannunga
-        config.setAllowedOrigins(List.of("https://sellsync-frontend.netlify.app")); 
+        // Frontend URL check pannikonga
+        config.setAllowedOrigins(List.of("https://sellsync-frontend.netlify.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Mukkiyam: script.js-la 'include' poturukinga
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
