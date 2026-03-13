@@ -143,26 +143,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. CORS Setup (Netlify error fix)
+            // 1. Link the CORS configuration directly here
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // 2. Disable CSRF for API
             .csrf(csrf -> csrf.disable())
-            
-            // 3. Auth Provider Setup
             .authenticationProvider(authenticationProvider())
-            
-            // 4. Endpoints Access
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
                 .anyRequest().permitAll()
             )
-            
-            // 5. Disable Default UI
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
-            
-            // 6. Stateless Session (IF_REQUIRED is okay for cookies)
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             );
@@ -170,7 +160,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // CORS Configuration Bean
+    // 2. Define the CORS bean here (Ensure CorsConfig.java is deleted)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -184,7 +174,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
-
-
-
