@@ -17,11 +17,11 @@ import java.nio.file.Paths;
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-            registry.addResourceHandler("/uploads/**")
-                    .addResourceLocations(
-                            "file:/C:/Users/SUPPORT2/Documents/Phoenix Code/dummy/SellSyncNew/uploads/",
-                            "file:/C:/SellSync/uploads/"
-                    );
+            // registry.addResourceHandler("/uploads/**")
+            //         .addResourceLocations(
+            //                 "file:/C:/Users/SUPPORT2/Documents/Phoenix Code/dummy/SellSyncNew/uploads/",
+            //                 "file:/C:/SellSync/uploads/"
+            //         );
             String supportUploadPath = Paths.get("uploads/support").toAbsolutePath().toUri().toString();
             // Path-oda end-la slash illai na, manual-ah saerkanum
 if (!supportUploadPath.endsWith("/")) {
