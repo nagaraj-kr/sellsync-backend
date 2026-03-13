@@ -77,16 +77,20 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
-    @Override
-    public boolean isEnabled() {
+@Override
+public boolean isEnabled() {
     String currentStatus = null;
+    
+    // Using direct object references assigned in constructor
     if (this.admin != null) currentStatus = this.admin.getStatus();
     else if (this.manufacturer != null) currentStatus = this.manufacturer.getStatus();
     else if (this.wholesaler != null) currentStatus = this.wholesaler.getStatus();
 
-    System.out.println("DEBUG: User status is -> " + currentStatus);
+    // Testing phase-kaga: User exist aanale login allow panna 'return true' pannalaam
+    // return true; 
+
     return "APPROVED".equalsIgnoreCase(currentStatus != null ? currentStatus.trim() : "");
-    }
+}
 
     // @Override
     // public boolean isEnabled() {
