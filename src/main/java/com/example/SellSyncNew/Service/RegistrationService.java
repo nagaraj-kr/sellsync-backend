@@ -29,7 +29,7 @@ public class RegistrationService {
 
     public String registerWholesaler(Wholesaler wholesaler) {
         wholesaler.setPassword(passwordEncoder.encode(wholesaler.getPassword()));
-        wholesaler.setStatus("APPROVED");
+        wholesaler.setStatus("PENDING");
         wholesalerRepo.save(wholesaler);
         return "Wholesaler registration request submitted!";
     }
