@@ -144,18 +144,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Link CORS directly
+            // 1. Link CORS configuration source
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 2. Disable CSRF for REST APIs
             .csrf(csrf -> csrf.disable())
+            
+            // 3. Set Authentication Provider
             .authenticationProvider(authenticationProvider())
+            
+            // 4. Request Authorization
             .authorizeHttpRequests(auth -> auth
-                // ⭐ Preflight request-ah explicit-ah allow pannanum (CORS Fix)
+                // ⭐ CRITICAL: Browser's preflight (OPTIONS) request-ah allow pannanum
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
                 .anyRequest().permitAll()
             )
+            
+            // 5. Disable default login UIs
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
+            
+            // 6. Session Management
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             );
@@ -163,13 +173,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // CORS Bean - Defines which frontend can talk to this backend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // ⭐ Netlify URL-ah sariyaana format-la kudunga
+        
+        // Allowed Origin (Netlify)
         config.setAllowedOrigins(List.of("https://sellsync-frontend.netlify.app"));
+        
+        // Allowed Methods
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        
+        // Allowed Headers
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+        
+        // Allow Cookies/Credentials
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
