@@ -30,54 +30,30 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private WholesalerRepository wholesalerRepository;
 
-    // @Override
-    // public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    //     // Check Admin table
-    //     Optional<Admin> adminOpt = adminRepository.findByEmail(email);
-    //     if (adminOpt.isPresent()) {
-    //         Admin admin = adminOpt.get();
-    //         return new CustomUserDetails(admin, "ADMIN");
-    //     }
-
-    //     // Check Manufacturer table
-    //     Optional<Manufacturer> manOpt = manufacturerRepository.findByEmail(email);
-    //     if (manOpt.isPresent()) {
-    //         Manufacturer man = manOpt.get();
-    //         return new CustomUserDetails(man, "MANUFACTURER");
-    //     }
-
-    //     // Check Wholesaler table
-    //     Optional<Wholesaler> wholeOpt = wholesalerRepository.findByEmail(email);
-    //     if (wholeOpt.isPresent()) {
-    //         Wholesaler whole = wholeOpt.get();
-    //         return new CustomUserDetails(whole, "WHOLESALER");
-    //     }
-
-    //     throw new UsernameNotFoundException("User not found with email: " + email);
-    // }
     @Override
-public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    System.out.println("Login attempt for email: " + email);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Check Admin table
+        Optional<Admin> adminOpt = adminRepository.findByEmail(email);
+        if (adminOpt.isPresent()) {
+            Admin admin = adminOpt.get();
+            return new CustomUserDetails(admin, "ADMIN");
+        }
 
-    Optional<Admin> adminOpt = adminRepository.findByEmail(email);
-    if (adminOpt.isPresent()) {
-        System.out.println("User found in ADMIN table");
-        return new CustomUserDetails(adminOpt.get(), "ADMIN");
+        // Check Manufacturer table
+        Optional<Manufacturer> manOpt = manufacturerRepository.findByEmail(email);
+        if (manOpt.isPresent()) {
+            Manufacturer man = manOpt.get();
+            return new CustomUserDetails(man, "MANUFACTURER");
+        }
+
+        // Check Wholesaler table
+        Optional<Wholesaler> wholeOpt = wholesalerRepository.findByEmail(email);
+        if (wholeOpt.isPresent()) {
+            Wholesaler whole = wholeOpt.get();
+            return new CustomUserDetails(whole, "WHOLESALER");
+        }
+
+        throw new UsernameNotFoundException("User not found with email: " + email);
     }
 
-    Optional<Manufacturer> manOpt = manufacturerRepository.findByEmail(email);
-    if (manOpt.isPresent()) {
-        System.out.println("User found in MANUFACTURER table");
-        return new CustomUserDetails(manOpt.get(), "MANUFACTURER");
-    }
-
-    Optional<Wholesaler> wholeOpt = wholesalerRepository.findByEmail(email);
-    if (wholeOpt.isPresent()) {
-        System.out.println("User found in WHOLESALER table");
-        return new CustomUserDetails(wholeOpt.get(), "WHOLESALER");
-    }
-
-    System.out.println("User NOT FOUND in any table!");
-    throw new UsernameNotFoundException("User not found");
-}
 }
