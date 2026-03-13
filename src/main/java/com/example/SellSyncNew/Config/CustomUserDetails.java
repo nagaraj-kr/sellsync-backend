@@ -77,16 +77,26 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
-
     @Override
     public boolean isEnabled() {
-        if (user instanceof Admin) {
-            return "APPROVED".equalsIgnoreCase(((Admin) user).getStatus());
-        } else if (user instanceof Manufacturer) {
-            return "APPROVED".equalsIgnoreCase(((Manufacturer) user).getStatus());
-        } else if (user instanceof Wholesaler) {
-            return "APPROVED".equalsIgnoreCase(((Wholesaler) user).getStatus());
-        }
-        return false;
+    String currentStatus = null;
+    if (this.admin != null) currentStatus = this.admin.getStatus();
+    else if (this.manufacturer != null) currentStatus = this.manufacturer.getStatus();
+    else if (this.wholesaler != null) currentStatus = this.wholesaler.getStatus();
+
+    System.out.println("DEBUG: User status is -> " + currentStatus);
+    return "APPROVED".equalsIgnoreCase(currentStatus != null ? currentStatus.trim() : "");
     }
+
+    // @Override
+    // public boolean isEnabled() {
+    //     if (user instanceof Admin) {
+    //         return "APPROVED".equalsIgnoreCase(((Admin) user).getStatus());
+    //     } else if (user instanceof Manufacturer) {
+    //         return "APPROVED".equalsIgnoreCase(((Manufacturer) user).getStatus());
+    //     } else if (user instanceof Wholesaler) {
+    //         return "APPROVED".equalsIgnoreCase(((Wholesaler) user).getStatus());
+    //     }
+    //     return false;
+    // }
 }
