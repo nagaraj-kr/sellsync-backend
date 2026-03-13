@@ -15,11 +15,6 @@ public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
 
-    @PostMapping("/admin")
-    public String registerAdmin(@RequestBody Admin admin) {
-        return registrationService.registerAdmin(admin);
-    }
-
     @PostMapping("/manufacturer")
     public String registerManufacturer(@RequestBody Manufacturer manufacturer) {
         return registrationService.registerManufacturer(manufacturer);
