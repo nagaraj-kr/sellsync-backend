@@ -166,10 +166,11 @@ public class SecurityConfig {
             .httpBasic(httpBasic -> httpBasic.disable())
             
             // 6. Session Management
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            );
 
+            .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            .sessionFixation().migrateSession() // Session hijacking thavirkka
+            )
         return http.build();
     }
 
@@ -194,4 +195,16 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    
+        @Bean
+        public org.springframework.session.web.http.CookieSerializer cookieSerializer() {
+            org.springframework.session.web.http.DefaultCookieSerializer serializer = new org.springframework.session.web.http.DefaultCookieSerializer();
+            serializer.setCookieName("JSESSIONID"); 
+            serializer.setCookiePath("/"); 
+            serializer.setDomainNamePattern("^.+?\\.(\\w+\\.\\w+)$"); // Optional: logic for cross-domain
+            serializer.setSameSite("None"); // ⭐ Cross-site request-kaga
+            serializer.setUseSecureCookie(true); // ⭐ Render HTTPS use pannuvadhala idhu must
+            return serializer;
+        }
 }
