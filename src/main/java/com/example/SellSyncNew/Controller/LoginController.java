@@ -181,8 +181,8 @@ public class LoginController {
 
         // ⭐ SESSION CREATE (IMPORTANT)
         HttpSession session = request.getSession(true);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", context);
-
+        session.setAttribute("SPRING_SECURITY_CONTEXT", context);        
+        System.out.println("Session ID: " + request.getSession().getId());
         // 🔍 ADMIN CHECK
         Optional<Admin> admin = adminService.findByEmail(loginRequest.getEmail());
 
