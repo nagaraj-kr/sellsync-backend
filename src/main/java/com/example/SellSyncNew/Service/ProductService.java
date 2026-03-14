@@ -278,7 +278,7 @@ public class ProductService {
     private final ProductRepository repository;
     private final ManufacturerRepository manufacturerRepository;
 
-    private final String UPLOAD_DIR = "C:/SellSync/uploads";
+    private final String UPLOAD_DIR = "uploads";
 
     public String saveImage(MultipartFile file) throws IOException {
         File directory = new File(UPLOAD_DIR);
