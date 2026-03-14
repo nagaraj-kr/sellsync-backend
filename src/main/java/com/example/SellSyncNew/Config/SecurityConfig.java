@@ -152,7 +152,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
