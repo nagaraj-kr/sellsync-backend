@@ -113,6 +113,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 
 import java.util.List;
 
@@ -144,51 +146,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Link CORS configuration source
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // 2. Disable CSRF for REST APIs
             .csrf(csrf -> csrf.disable())
-            
-            // 3. Set Authentication Provider
             .authenticationProvider(authenticationProvider())
-            
-            // 4. Request Authorization
             .authorizeHttpRequests(auth -> auth
-                // ⭐ CRITICAL: Browser's preflight (OPTIONS) request-ah allow pannanum
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
                 .anyRequest().permitAll()
             )
-            
-            // 5. Disable default login UIs
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
-            
-            // 6. Session Management
-
             .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            .sessionFixation().migrateSession() // Session hijacking thavirkka
-            )
-        return http.build();
-    }
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionFixation().migrateSession()
+            ); // <-- Semicolon added here
 
-    // CORS Bean - Defines which frontend can talk to this backend
+        return http.build();
+    } // <-- Method closing brace added here
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        
-        // Allowed Origin (Netlify)
         config.setAllowedOrigins(List.of("https://sellsync-frontend.netlify.app"));
-        
-        // Allowed Methods
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // Allowed Headers
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
-        
-        // Allow Cookies/Credentials
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -196,15 +177,14 @@ public class SecurityConfig {
         return source;
     }
 
-    
-        @Bean
-        public org.springframework.session.web.http.CookieSerializer cookieSerializer() {
-            org.springframework.session.web.http.DefaultCookieSerializer serializer = new org.springframework.session.web.http.DefaultCookieSerializer();
-            serializer.setCookieName("JSESSIONID"); 
-            serializer.setCookiePath("/"); 
-            serializer.setDomainNamePattern("^.+?\\.(\\w+\\.\\w+)$"); // Optional: logic for cross-domain
-            serializer.setSameSite("None"); // ⭐ Cross-site request-kaga
-            serializer.setUseSecureCookie(true); // ⭐ Render HTTPS use pannuvadhala idhu must
-            return serializer;
-        }
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName("JSESSIONID"); 
+        serializer.setCookiePath("/"); 
+        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.\\w+)$"); 
+        serializer.setSameSite("None"); 
+        serializer.setUseSecureCookie(true); 
+        return serializer;
+    }
 }
