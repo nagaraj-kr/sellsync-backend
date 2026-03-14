@@ -182,7 +182,6 @@ public class SecurityConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("JSESSIONID"); 
         serializer.setCookiePath("/"); 
-        serializer.setDomainName("sellsync-backend.onrender.com");
         serializer.setSameSite("None"); 
         serializer.setUseSecureCookie(true); 
         return serializer;
