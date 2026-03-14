@@ -81,7 +81,7 @@ public class AdminSettingController {
     public ResponseEntity<?> getCurrentAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("Authentication = " + authentication);
+       
 
         if (authentication == null || !authentication.isAuthenticated() ||
                 authentication.getPrincipal().equals("anonymousUser")) {
@@ -89,7 +89,7 @@ public class AdminSettingController {
         }
 
         Object principal = authentication.getPrincipal();
-        System.out.println("Principal = " + principal);
+       
 
         if (!(principal instanceof CustomUserDetails)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
