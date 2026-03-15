@@ -253,16 +253,28 @@ public List<OrderDTO> getOrdersByManufacturerEmail(String email) {
     }
 
     // ✅ Business logic to update the order status
-    public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
-        Order order = orderRepo.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+    // public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
+    //     Order order = orderRepo.findById(orderId)
+    //             .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        order.setOrderStatus(newStatus);
-        orderRepo.save(order);
+    //     order.setOrderStatus(newStatus);
+    //     orderRepo.save(order);
 
-        return convertToDTO(order); // convert to OrderDTO
+    //     return convertToDTO(order); // convert to OrderDTO
+    // }
+    // OrderController.java
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<OrderDTO> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody Map<String, String> body) { // Request body-la "status" key irukkaal nu confirm pannanum
+    
+        String newStatus = body.get("status");
+        if (newStatus == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+        return ResponseEntity.ok(updatedOrder);
     }
-
     // ✅ Convert Order to OrderDTO
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
