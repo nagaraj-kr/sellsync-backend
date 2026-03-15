@@ -278,40 +278,30 @@ public class ProductService {
     private final ProductRepository repository;
     private final ManufacturerRepository manufacturerRepository;
 
-    private final String UPLOAD_DIR = "uploads";
+    // private final String UPLOAD_DIR = "uploads";
 
-    public String saveImage(MultipartFile file) throws IOException {
-        File directory = new File(UPLOAD_DIR);
-        if (!directory.exists()) directory.mkdirs();
+    // public String saveImage(MultipartFile file) throws IOException {
+    //     File directory = new File(UPLOAD_DIR);
+    //     if (!directory.exists()) directory.mkdirs();
 
-        String originalFilename = file.getOriginalFilename().replaceAll("\\s+", "_");
-        String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
-        File destination = new File(directory, uniqueFilename);
+    //     String originalFilename = file.getOriginalFilename().replaceAll("\\s+", "_");
+    //     String uniqueFilename = UUID.randomUUID() + "_" + originalFilename;
+    //     File destination = new File(directory, uniqueFilename);
 
-        file.transferTo(destination);
-        System.out.println("✅ File saved at: " + destination.getAbsolutePath());
+    //     file.transferTo(destination);
+    //     System.out.println("✅ File saved at: " + destination.getAbsolutePath());
 
-        return "/uploads/" + uniqueFilename;
-    }
+    //     return "/uploads/" + uniqueFilename;
+    // }
 
 
-    /**
-     * Add a new product by a manufacturer.
-     */
-    public Product addProduct(ProductDTO dto) {
+public Product addProduct(ProductDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Manufacturer manufacturer = manufacturerRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Manufacturer not found for email: " + email));
 
-        String imageUrl = null;
-        MultipartFile imageFile = dto.getImage();
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                imageUrl = saveImage(imageFile);
-            } catch (IOException e) {
-                throw new RuntimeException("Image upload failed: " + e.getMessage(), e);
-            }
-        }
+        // ⭐ Base64 String-ah direct-ah DTO-la irundhu vangurom
+        String imageUrl = dto.getImageUrl();
 
         Product product = Product.builder()
                 .name(dto.getName())
@@ -319,14 +309,34 @@ public class ProductService {
                 .price(dto.getPrice())
                 .stock(dto.getStock())
                 .description(dto.getDescription())
-                .imageUrl(imageUrl)
-                .status("active") // default status
+                .imageUrl(imageUrl) // ⭐ Direct-ah Base64 string save aagum
+                .status("active")
                 .manufacturer(manufacturer)
                 .build();
 
         return repository.save(product);
     }
 
+    /**
+     * Update an existing product.
+     */
+    public Product updateProduct(Long id, ProductDTO dto) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        product.setName(dto.getName());
+        product.setCategory(dto.getCategory());
+        product.setPrice(dto.getPrice());
+        product.setStock(dto.getStock());
+        product.setDescription(dto.getDescription());
+
+        // ⭐ Update logic-laiyum Base64 string-ah direct-ah update pannunga
+        if (dto.getImageUrl() != null && !dto.getImageUrl().isEmpty()) {
+            product.setImageUrl(dto.getImageUrl());
+        }
+
+        return repository.save(product);
+    }
     /**
      * Get all products for the logged-in manufacturer.
      */
@@ -385,30 +395,30 @@ public class ProductService {
     /**
      * Update an existing product.
      */
-    public Product updateProduct(Long id, ProductDTO dto) {
-        Product product = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    // public Product updateProduct(Long id, ProductDTO dto) {
+    //     Product product = repository.findById(id)
+    //             .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Update fields
-        product.setName(dto.getName());
-        product.setCategory(dto.getCategory());
-        product.setPrice(dto.getPrice());
-        product.setStock(dto.getStock());
-        product.setDescription(dto.getDescription());
+    //     // Update fields
+    //     product.setName(dto.getName());
+    //     product.setCategory(dto.getCategory());
+    //     product.setPrice(dto.getPrice());
+    //     product.setStock(dto.getStock());
+    //     product.setDescription(dto.getDescription());
 
-        // Handle new image
-        MultipartFile newImage = dto.getImage();
-        if (newImage != null && !newImage.isEmpty()) {
-            try {
-                String imagePath = saveImage(newImage);
-                product.setImageUrl(imagePath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to save image: " + e.getMessage(), e);
-            }
-        }
+    //     // Handle new image
+    //     MultipartFile newImage = dto.getImage();
+    //     if (newImage != null && !newImage.isEmpty()) {
+    //         try {
+    //             String imagePath = saveImage(newImage);
+    //             product.setImageUrl(imagePath);
+    //         } catch (IOException e) {
+    //             throw new RuntimeException("Failed to save image: " + e.getMessage(), e);
+    //         }
+    //     }
 
-        return repository.save(product);
-    }
+    //     return repository.save(product);
+    // }
 
     /**
      * Pause product (soft delete).
