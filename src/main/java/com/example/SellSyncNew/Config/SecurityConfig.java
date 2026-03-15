@@ -154,6 +154,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/api/register/**").permitAll()
                 .requestMatchers("/api/admin/**", "/api/requests/**", "/api/support/**", "/api/wholesaler/**", "/api/manufacturer/**").permitAll()
                 .requestMatchers("/api/products/**").permitAll()
+                .requestMatchers("/api/orders/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
