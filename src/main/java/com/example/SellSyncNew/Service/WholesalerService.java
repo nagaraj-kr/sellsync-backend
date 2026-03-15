@@ -16,6 +16,9 @@ public class WholesalerService {
     @Autowired
     private WholesalerRepository wholesalerRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
+
     public List<Wholesaler> getAllWholesalers() {
         return wholesalerRepository.findAll();
     }
@@ -29,10 +32,23 @@ public class WholesalerService {
         return wholesalerRepository.findById(id).orElse(null);
     }
 
-    public Wholesaler saveWholesaler(Wholesaler wholesaler) {
-        return wholesalerRepository.save(wholesaler);
-    }
+    // public Wholesaler saveWholesaler(Wholesaler wholesaler) {
+    //     return wholesalerRepository.save(wholesaler);
+    // }
 
+    
+    public Wholesaler saveWholesaler(Wholesaler updatedWholesaler) {
+        Wholesaler existingWholesaler = wholesalerRepository.findById(updatedWholesaler.getId())
+                .orElseThrow(() -> new RuntimeException("Wholesaler not found"));
+        if (updatedWholesaler.getPassword() != null && !updatedWholesaler.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(updatedWholesaler.getPassword());
+            updatedWholesaler.setPassword(encodedPassword);
+        } else {
+            updatedWholesaler.setPassword(existingWholesaler.getPassword());
+        }
+        return wholesalerRepository.save(updatedWholesaler);
+    }
+    
     public void deleteWholesaler(Long id) {
         wholesalerRepository.deleteById(id);
     }
