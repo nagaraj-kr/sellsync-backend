@@ -65,15 +65,27 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @PutMapping("/{orderId}/status")
-    public ResponseEntity<OrderDTO> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody Map<String, String> body) {
+    // @PutMapping("/{orderId}/status")
+    // public ResponseEntity<OrderDTO> updateOrderStatus(
+    //         @PathVariable Long orderId,
+    //         @RequestBody Map<String, String> body) {
 
-        String newStatus = body.get("status");
-        OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
-        return ResponseEntity.ok(updatedOrder);
-    }
+    //     String newStatus = body.get("status");
+    //     OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+    //     return ResponseEntity.ok(updatedOrder);
+    // }
+       @PutMapping("/{orderId}/status")
+        public ResponseEntity<OrderDTO> updateOrderStatus(
+                @PathVariable Long orderId,
+                @RequestBody Map<String, String> body) { // Request body-la "status" key irukkaal nu confirm pannanum
+        
+            String newStatus = body.get("status");
+            if (newStatus == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+            return ResponseEntity.ok(updatedOrder);
+        }
 
 
     @GetMapping("/my/pending")
