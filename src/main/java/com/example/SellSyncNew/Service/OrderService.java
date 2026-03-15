@@ -252,7 +252,7 @@ public List<OrderDTO> getOrdersByManufacturerEmail(String email) {
         this.orderRepo = orderRepo;
     }
 
-    ✅ Business logic to update the order status
+    // ✅ Business logic to update the order status
     public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
