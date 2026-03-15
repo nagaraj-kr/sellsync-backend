@@ -374,7 +374,7 @@ public Product addProduct(ProductDTO dto) {
                         .price(product.getPrice())
                         .description(product.getDescription())
                         .imageUrl(product.getImageUrl())
-                        .manufacturerName(product.getManufacturer().getOrganization_name())
+                        .manufacturerName(product.getManufacturer().getOrganizationName())
                         .build())
                 .collect(Collectors.toList());
     }
