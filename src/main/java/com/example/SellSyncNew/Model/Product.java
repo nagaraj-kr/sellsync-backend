@@ -26,6 +26,7 @@ public class Product {
     private String description;
 
     @Column(name = "image_url")
+    @Column(columnDefinition = "LONGTEXT")
     private String imageUrl; // Optional for storing image links
 
     @ManyToOne(fetch = FetchType.LAZY)
