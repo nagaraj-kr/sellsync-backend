@@ -4,7 +4,7 @@ package com.example.SellSyncNew.Service;
 import com.example.SellSyncNew.Model.Wholesaler;
 import com.example.SellSyncNew.Repository.WholesalerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
