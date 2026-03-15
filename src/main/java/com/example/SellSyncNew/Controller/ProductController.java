@@ -19,8 +19,23 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDTO> add(@ModelAttribute ProductDTO dto) {
+    // @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<ProductDTO> add(@ModelAttribute ProductDTO dto) {
+    //     Product saved = productService.addProduct(dto);
+
+    //     ProductDTO response = new ProductDTO();
+    //     response.setId(saved.getId());
+    //     response.setName(saved.getName());
+    //     response.setCategory(saved.getCategory());
+    //     response.setPrice(saved.getPrice());
+    //     response.setStock(saved.getStock());
+    //     response.setDescription(saved.getDescription());
+    //     response.setImageUrl(saved.getImageUrl());
+
+    //     return ResponseEntity.ok(response);
+    // }
+    @PostMapping
+    public ResponseEntity<ProductDTO> add(@RequestBody ProductDTO dto) {
         Product saved = productService.addProduct(dto);
 
         ProductDTO response = new ProductDTO();
@@ -30,26 +45,29 @@ public class ProductController {
         response.setPrice(saved.getPrice());
         response.setStock(saved.getStock());
         response.setDescription(saved.getDescription());
-        response.setImageUrl(saved.getImageUrl());
+        response.setImageUrl(saved.getImageUrl()); // Returns the Base64 string
 
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return ResponseEntity.ok(productService.getProductsForCurrentManufacturer());
-    }
-
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> get(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProduct(id));
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Product> update(@PathVariable Long id, @ModelAttribute ProductDTO dto) {
-        return ResponseEntity.ok(productService.updateProduct(id, dto));
-    }
+        }
+    
+        @GetMapping
+        public ResponseEntity<List<ProductDTO>> getAllProducts() {
+            return ResponseEntity.ok(productService.getProductsForCurrentManufacturer());
+        }
+    
+    
+        @GetMapping("/{id}")
+        public ResponseEntity<Product> get(@PathVariable Long id) {
+            return ResponseEntity.ok(productService.getProduct(id));
+        }
+        @PutMapping("/{id}")
+        public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+            return ResponseEntity.ok(productService.updateProduct(id, dto));
+        }
+        // @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        // public ResponseEntity<Product> update(@PathVariable Long id, @ModelAttribute ProductDTO dto) {
+        //     return ResponseEntity.ok(productService.updateProduct(id, dto));
+        // }
 
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> delete(@PathVariable Long id) {
